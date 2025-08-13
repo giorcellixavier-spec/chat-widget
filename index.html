@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chat AI Receptionist</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 350px;
+    margin: 0;
+    padding: 0;
+    background: #f5f8fa;
+  }
+  #chat-header {
+    background: #3498db;
+    color: white;
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+  }
+  #chat-content {
+    padding: 10px;
+    height: 350px;
+    overflow-y: auto;
+    background: white;
+    display: flex;
+    flex-direction: column;
+  }
+  button {
+    margin: 5px 0;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: none;
+    background: #eee;
+    cursor: pointer;
+    font-size: 1em;
+  }
+  .msg {
+    max-width: 80%;
+    margin: 5px 0;
+    padding: 10px 15px;
+    border-radius: 15px;
+  }
+  .msg.bot {
+    background: #3498db;
+    color: white;
+    align-self: flex-start;
+  }
+  .msg.user {
+    background: #ddd;
+    color: #333;
+    align-self: flex-end;
+  }
+</style>
+</head>
+<body>
+  <div id="chat-header">Chat AI Receptionist</div>
+  <div id="chat-content"></div>
+
+<script>
+const data = {
+  it: {
+    questions: [
+      { id: "orari", text: "Quali sono gli orari di apertura?" },
+      { id: "prenotazione", text: "Come prenoto un appuntamento?" }
+    ],
+    answers: {
+      orari: "Lo studio è aperto dal lunedì al venerdì, dalle 9 alle 18.",
+      prenotazione: "Puoi prenotare chiamando il numero 0123456789."
+    }
+  }
+};
+
+let currentLang = "it";
+const chatContent = document.getElementById("chat-content");
+
+function addMessage(text, from) {
+  const div = document.createElement("div");
+  div.classList.add("msg", from);
+  div.textContent = text;
+  chatContent.appendChild(div);
+  chatContent.scrollTop = chatContent.scrollHeight;
+}
+
+function showQuestions() {
+  chatContent.innerHTML = "";
+  data[currentLang].questions.forEach(q => {
+    const btn = document.createElement("button");
+    btn.textContent = q.text;
+    btn.onclick = () => {
+      addMessage(q.text, "user");
+      addMessage(data[currentLang].answers[q.id], "bot");
+    };
+    chatContent.appendChild(btn);
+  });
+}
+
+showQuestions();
+</script>
+</body>
+</html>
