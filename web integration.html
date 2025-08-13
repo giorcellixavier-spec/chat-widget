@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Receptionist Moderno</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    max-width: 600px;
+    margin: 2em auto;
+    padding: 1.5em;
+    background: #f9fafb;
+    color: #333;
+  }
+  h1 {
+    text-align: center;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  label {
+    display: block;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+    color: #555;
+  }
+  select {
+    width: 100%;
+    padding: 0.5em;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    margin-bottom: 1.5em;
+    transition: border-color 0.3s ease;
+  }
+  select:focus {
+    outline: none;
+    border-color: #3498db;
+  }
+  #questions button {
+    display: block;
+    width: 100%;
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 0.75em 1em;
+    margin-bottom: 0.8em;
+    border-radius: 12px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(52, 152, 219, 0.4);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  #questions button:hover {
+    background: #2980b9;
+    box-shadow: 0 6px 12px rgba(41, 128, 185, 0.6);
+  }
+  #answer {
+    margin-top: 2em;
+    font-weight: 500;
+    font-size: 1.2em;
+    min-height: 70px;
+    padding: 1em;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  #answer.visible {
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<h1>AI Receptionist</h1>
+
+<label for="lang">Seleziona lingua:</label>
+<select id="lang" aria-label="Seleziona lingua">
+  <option value="it">Italiano</option>
+  <option value="en">English</option>
+</select>
+
+<div id="questions" role="list" aria-label="Domande frequenti"></div>
+
+<div id="answer" aria-live="polite"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const data = {
+    it: {
+      questions: [
+        { id: "orari", text: "Quali sono gli orari di apertura?" },
+        { id: "prenotazione", text: "Come prenoto un appuntamento?" },
+        { id: "indirizzo", text: "Dove siete ubicati?" },
+        { id: "contatti", text: "Quali sono i contatti?" },
+        { id: "specialisti", text: "Quali specialisti avete?" }
+      ],
+      answers: {
+        orari: "Lo studio è aperto dal lunedì al venerdì, dalle 9 alle 18.",
+        prenotazione: "Puoi prenotare chiamando il numero 0123456789 o tramite il nostro sito www.studiomedico.it.",
+        indirizzo: "Siamo in Via Roma 123, Milano.",
+        contatti: "Puoi contattarci via email a info@studiomedico.it o telefonicamente al 0123456789.",
+        specialisti: "Abbiamo specialisti in cardiologia, dermatologia e pediatria."
+      }
+    },
+    en: {
+      questions: [
+        { id: "orari", text: "What are the opening hours?" },
+        { id: "prenotazione", text: "How can I book an appointment?" },
+        { id: "indirizzo", text: "Where are you located?" },
+        { id: "contatti", text: "What are the contact details?" },
+        { id: "specialisti", text: "Which specialists do you have?" }
+      ],
+      answers: {
+        orari: "The clinic is open Monday to Friday, from 9 AM to 6 PM.",
+        prenotazione: "You can book by calling 0123456789 or through our website www.medicalclinic.com.",
+        indirizzo: "We are located at 123 Rome Street, Milan.",
+        contatti: "You can contact us by email at info@medicalclinic.com or by phone at 0123456789.",
+        specialisti: "We have specialists in cardiology, dermatology, and pediatrics."
+      }
+    }
+  };
+
+  const langSelect = document.getElementById("lang");
+  const questionsDiv = document.getElementById("questions");
+  const answerDiv = document.getElementById("answer");
+
+  function speak(text, lang) {
+    if ("speechSynthesis" in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang === "it" ? "it-IT" : "en-US";
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
+    }
+  }
+
+  function loadQuestions(language) {
+    questionsDiv.innerHTML = "";
+    answerDiv.textContent = "";
+    answerDiv.classList.remove("visible");
+    data[language].questions.forEach(q => {
+      const btn = document.createElement("button");
+      btn.textContent = q.text;
+      btn.onclick = () => {
+        answerDiv.classList.remove("visible");
+        setTimeout(() => {
+          answerDiv.textContent = data[language].answers[q.id];
+          speak(data[language].answers[q.id], language);
+          answerDiv.classList.add("visible");
+        }, 200);
+      };
+      questionsDiv.appendChild(btn);
+    });
+  }
+
+  loadQuestions(langSelect.value);
+
+  langSelect.addEventListener("change", e => {
+    loadQuestions(e.target.value);
+  });
+});
+</script>
+
+</body>
+</html>
